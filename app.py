@@ -5,13 +5,13 @@ import plotly.express as px
 from textblob import TextBlob
 
 # 1. Postavke stranice
-st.set_page_config(page_title="AI Financijski Radar V7", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="AI Financijski Terminal V8", layout="wide", initial_sidebar_state="collapsed")
 
 # 2. Naslov i gumb za osvježavanje
-st.title("🤖 Moj AI Financijski Radar V7")
-st.caption("Sustav automatski analizira tehničke podatke i koristi NLP umjetnu inteligenciju za ocjenu sentimenta vijesti.")
+st.title("🤖 Moj AI Financijski Terminal V8")
+st.caption("Profesionalni radar s ugrađenim RSI indikatorom, 52-tjednim rasponom i AI generiranim signalima za trgovanje.")
 
-if st.button("🔄 OSVJEŽI SVE PODATKE I AI SENTIMENT", use_container_width=True):
+if st.button("🔄 RESTARTAJ TERMINAL I OSVJEŽI ANALIZU", use_container_width=True):
     st.cache_data.clear()
     st.rerun()
 
@@ -22,6 +22,20 @@ kat_catalyst = ["ASTS", "LAC", "CHPT", "NIO", "MARA"]
 kat_divovi = ["PLTR", "SOFI", "HOOD", "BABA", "TSM"]
 
 imena_makro = {"GC=F": "Zlato (Gold Futures)", "CL=F": "Sirova Nafta (Crude Oil)"}
+
+# Funkcija za izračun RSI indikatora
+def izracunaj_rsi(history_df, period=14):
+    if len(history_df) < period + 1:
+        return None
+    delta = history_df['Close'].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    
+    # Izbjegavanje dijeljenja s nulom
+    rs = gain / loss
+    rs = rs.fillna(0)
+    rsi = 100 - (100 / (1 + rs))
+    return rsi.iloc[-1]
 
 # Pomoćna AI funkcija za analizu teksta
 def analiziraj_sentiment(tekst):
@@ -41,9 +55,10 @@ def analiziraj_sentiment(tekst):
 def dohvati_podatke(ticker):
     try:
         dionica = yf.Ticker(ticker)
-        povijest = dionica.history(period="5d")
+        # Uzimamo zadnjih 30 dana kako bismo imali dovoljno podataka za stabilan RSI (14)
+        povijest = dionica.history(period="30d")
         
-        if len(povijest) < 2:
+        if len(povijest) < 15:
             return None
             
         trenutna_cijena = povijest['Close'].iloc[-1]
@@ -57,6 +72,14 @@ def dohvati_podatke(ticker):
             prosjecni_volumen = info.get('averageDailyVolume10Day', 1)
             
         volume_score = trenutni_volumen / prosjecni_volumen if prosjecni_volumen > 1 else 0
+        
+        # Izračun RSI-ja
+        rsi_vrijednost = izracunaj_rsi(povijest)
+        
+        # Izvlačenje 52-tjednog raspona
+        low_52 = info.get('fiftyTwoWeekLow', trenutna_cijena)
+        high_52 = info.get('fiftyTwoWeekHigh', trenutna_cijena)
+        raspon_52 = f"${round(low_52, 2)} - ${round(high_52, 2)}"
         
         if ticker in imena_makro:
             ime = imena_makro[ticker]
@@ -76,7 +99,6 @@ def dohvati_podatke(ticker):
                     izvor = v.get('publisher', 'Nepoznato')
                     link = v.get('link', '#')
                     
-                    # Provjera je li Yahoo poslao prazno ili nevažeće polje
                     if naslov and naslov != "Nema naslova" and izvor != "Nepoznato":
                         score, oznaka = analiziraj_sentiment(naslov)
                         ukupni_sentiment_score += score
@@ -90,7 +112,6 @@ def dohvati_podatke(ticker):
         except:
             pass
         
-        # Ako Yahoo nije poslao ništa, stavljamo čisti 'Vikend mod' za korisnika
         if len(pokupljene_vijesti) == 0:
             pokupljene_vijesti.append({
                 "naslov": "Tržište trenutno miruje. Nove AI vijesti stižu s otvaranjem burze.",
@@ -99,25 +120,40 @@ def dohvati_podatke(ticker):
                 "ai_oznaka": "🟡 Neutralno (Čekanje)"
             })
         
-        # Konačna AI ocjena za cijelu dionicu
+        # Određivanje konačnog AI sentimenta tekstualno
         if broj_pravih_vijesti > 0:
             prosjek = ukupni_sentiment_score / broj_pravih_vijesti
-            if prosjek > 0.05:
-                konacni_sentiment = "🟢 POZITIVAN"
-            elif prosjek < -0.05:
-                konacni_sentiment = "🔴 NEGATIVAN"
-            else:
-                konacni_sentiment = "🟡 NEUTRALAN"
+            konacni_sentiment = "🟢 POZITIVAN" if prosjek > 0.05 else ("🔴 NEGATIVAN" if prosjek < -0.05 else "🟡 NEUTRALAN")
         else:
-            konacni_sentiment = "⏳ ČEKAM SIGNAL"
+            konacni_sentiment = "⏳ ČEKAM"
             
+        # LOGIKA ZA AUTOMATSKI AI STATUS (GENERIRANJE SIGNALA)
+        if rsi_vrijednost is not None:
+            if rsi_vrijednost < 32 and (konacni_sentiment == "🟢 POZITIVAN" or volume_score > 1.2):
+                status = "🔥 SIGNAL KUPNJE"
+            elif rsi_vrijednost > 70:
+                status = "⚠️ RISK (PREKUPLJENO)"
+            elif rsi_vrijednost < 35:
+                status = "🛒 JEFTINO (PRATI)"
+            elif volume_score > 2.0 and postotak > 2:
+                status = "🚀 PROBOJ (BREAKOUT)"
+            else:
+                status = "⏳ PROMATRAJ"
+        else:
+            status = "⏳ ČEKAM PODATKE"
+            
+        rsi_prikaz = round(rsi_vrijednost, 1) if rsi_vrijednost is not None else "N/A"
+        
         return {
             "Ticker": ticker,
             "Ime Kompanije": ime,
             "Cijena ($)": round(trenutna_cijena, 3),
             "Promjena (%)": round(postotak, 2),
             "Volume Score": round(volume_score, 2),
+            "RSI (14)": rsi_prikaz,
             "AI Sentiment": konacni_sentiment,
+            "AI Status": status,
+            "52-Tjedni Raspon": raspon_52,
             "Vijesti": pokupljene_vijesti
         }
     except:
@@ -133,8 +169,10 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
     if podaci_lista:
         df = pd.DataFrame(podaci_lista)
         
-        # Prikaz tablice
-        prikaz_df = df.drop(columns=["Vijesti"])
+        # Reorganizacija stupaca za maksimalnu preglednost na mobitelu
+        stupci_za_prikaz = ["Ticker", "Cijena ($)", "Promjena (%)", "Volume Score", "RSI (14)", "AI Status", "52-Tjedni Raspon"]
+        prikaz_df = df[stupci_za_prikaz]
+        
         st.dataframe(
             prikaz_df.style.format({
                 "Cijena ($)": "{:.3f}",
@@ -177,7 +215,7 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
         st.warning("Nije moguće učitati podatke.")
 
 # TABS sučelje
-tab0, tab1, tab2, tab3 = st.tabs(["🌍 Geopolitika & Makro (Zlato/Nafta)", "💰 Penny / Mali Radari", "⚡ Catalyst Dionice", "🏛️ Globalni Divovi"])
+tab0, tab1, tab2, tab3 = st.tabs(["🌍 Geopolitika & Makro", "💰 Penny / Mali Radari", "⚡ Catalyst Dionice", "🏛️ Globalni Divovi"])
 
 with tab0:
     st.header("Zlato i Nafta (Glavni obrambeni instrumenti)")
