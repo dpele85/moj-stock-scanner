@@ -1,4 +1,5 @@
+streamlit
 yfinance
 pandas
-lxml
 plotly
+textblob
