@@ -25,10 +25,10 @@ imena_makro = {"GC=F": "Zlato (Gold Futures)", "CL=F": "Sirova Nafta (Crude Oil)
 
 # Pomoćna AI funkcija za analizu teksta
 def analiziraj_sentiment(tekst):
-    if not tekst or tekst == "Nema naslova":
+    if not tekst or tekst == "Nema naslova" or "Tržište miruje" in tekst:
         return 0, "🟡 Neutralno"
     analysis = TextBlob(tekst)
-    score = analysis.sentiment.polarity # Vraća broj od -1 (skroz negativno) do +1 (skroz pozitivno)
+    score = analysis.sentiment.polarity
     
     if score > 0.05:
         return score, "🟢 Bullish (Pozitivno)"
@@ -66,33 +66,42 @@ def dohvati_podatke(ticker):
         # Izvlačenje vijesti i AI analiza
         pokupljene_vijesti = []
         ukupni_sentiment_score = 0
-        broj_vijesti = 0
+        broj_pravih_vijesti = 0
         
         try:
             vijesti_izvor = dionica.news
-            if vijesti_izvor:
+            if vijesti_izvor and len(vijesti_izvor) > 0:
                 for v in vijesti_izvor[:3]:
-                    naslov = v.get('title', 'Nema naslova')
+                    naslov = v.get('title', '').strip()
                     izvor = v.get('publisher', 'Nepoznato')
                     link = v.get('link', '#')
                     
-                    # Pokreni AI analizu na naslovu vijesti
-                    score, oznaka = analiziraj_sentiment(naslov)
-                    ukupni_sentiment_score += score
-                    broj_vijesti += 1
-                    
-                    pokupljene_vijesti.append({
-                        "naslov": naslov, 
-                        "izvor": izvor, 
-                        "link": link,
-                        "ai_oznaka": oznaka
-                    })
+                    # Provjera je li Yahoo poslao prazno ili nevažeće polje
+                    if naslov and naslov != "Nema naslova" and izvor != "Nepoznato":
+                        score, oznaka = analiziraj_sentiment(naslov)
+                        ukupni_sentiment_score += score
+                        broj_pravih_vijesti += 1
+                        pokupljene_vijesti.append({
+                            "naslov": naslov, 
+                            "izvor": izvor, 
+                            "link": link,
+                            "ai_oznaka": oznaka
+                        })
         except:
             pass
         
+        # Ako Yahoo nije poslao ništa, stavljamo čisti 'Vikend mod' za korisnika
+        if len(pokupljene_vijesti) == 0:
+            pokupljene_vijesti.append({
+                "naslov": "Tržište trenutno miruje. Nove AI vijesti stižu s otvaranjem burze.",
+                "izvor": "Sustav Radara",
+                "link": "#",
+                "ai_oznaka": "🟡 Neutralno (Čekanje)"
+            })
+        
         # Konačna AI ocjena za cijelu dionicu
-        if broj_vijesti > 0:
-            prosjek = ukupni_sentiment_score / broj_vijesti
+        if broj_pravih_vijesti > 0:
+            prosjek = ukupni_sentiment_score / broj_pravih_vijesti
             if prosjek > 0.05:
                 konacni_sentiment = "🟢 POZITIVAN"
             elif prosjek < -0.05:
@@ -100,7 +109,7 @@ def dohvati_podatke(ticker):
             else:
                 konacni_sentiment = "🟡 NEUTRALAN"
         else:
-            konacni_sentiment = "🟡 Nema vijesti (Vikend)"
+            konacni_sentiment = "⏳ ČEKAM SIGNAL"
             
         return {
             "Ticker": ticker,
@@ -124,7 +133,7 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
     if podaci_lista:
         df = pd.DataFrame(podaci_lista)
         
-        # Prikaz tablice u kojoj je sada ugrađen i AI stupac!
+        # Prikaz tablice
         prikaz_df = df.drop(columns=["Vijesti"])
         st.dataframe(
             prikaz_df.style.format({
@@ -153,18 +162,17 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
         
         # AI Sekcija za detaljne vijesti
         st.subheader("📰 AI Analiza pojedinačnih vijesti:")
-        ima_vijesti = False
         for stavka in podaci_lista:
             if stavka["Vijesti"]:
-                ima_vijesti = True
                 with st.expander(f"AI Analiza za {stavka['Ticker']} ({stavka['Ime Kompanije']})"):
                     for v in stavka["Vijesti"]:
-                        st.markdown(f"**[{v['naslov']}]({v['link']})**")
-                        st.write(f"🕵️‍♂️ **AI Ocjena ove vijesti:** {v['ai_oznaka']}")
+                        if v['link'] != "#":
+                            st.markdown(f"**[{v['naslov']}]({v['link']})**")
+                        else:
+                            st.markdown(f"**{v['naslov']}**")
+                        st.write(f"🕵️‍♂️ **AI Ocjena:** {v['ai_oznaka']}")
                         st.caption(f"Izvor: {v['izvor']}")
                         st.write("---")
-        if not ima_vijesti:
-            st.info("Trenutno nema novih vijesti za analizu (vikend ili nema objava).")
     else:
         st.warning("Nije moguće učitati podatke.")
 
