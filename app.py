@@ -3,53 +3,20 @@ import yfinance as yf
 import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
-import json
-import os
 
 # 1. Postavke stranice
 st.set_page_config(page_title="AI Financijski Terminal V13", layout="wide", initial_sidebar_state="collapsed")
 
-# --- FUNKCIJE ZA TRAJNO SPREMANJE PODATAKA ---
-BAZA_PORTFOLIO = "baza_portfolio.json"
-BAZA_POVIJEST = "baza_povijest.json"
-
-def ucitaj_bazu():
-    if os.path.exists(BAZA_PORTFOLIO):
-        try:
-            with open(BAZA_PORTFOLIO, "r") as f:
-                st.session_state.kupljene_dionice = json.load(f)
-        except:
-            st.session_state.kupljene_dionice = {}
-    else:
-        st.session_state.kupljene_dionice = {}
-        with open(BAZA_PORTFOLIO, "w") as f:
-            json.dump({}, f)
-        
-    if os.path.exists(BAZA_POVIJEST):
-        try:
-            with open(BAZA_POVIJEST, "r") as f:
-                st.session_state.povijest_trejdova = json.load(f)
-        except:
-            st.session_state.povijest_trejdova = []
-    else:
-        st.session_state.povijest_trejdova = []
-        with open(BAZA_POVIJEST, "w") as f:
-            json.dump([], f)
-
-def spremi_bazu():
-    with open(BAZA_PORTFOLIO, "w") as f:
-        json.dump(st.session_state.kupljene_dionice, f)
-    with open(BAZA_POVIJEST, "w") as f:
-        json.dump(st.session_state.povijest_trejdova, f)
-
-# Inicijalizacija i automatsko učitavanje pri pokretanju
-if "kupljene_dionice" not in st.session_state or "povijest_trejdova" not in st.session_state:
-    ucitaj_bazu()
-# ---------------------------------------------
+# --- STABILNA INICIJALIZACIJA MEMORIJE BEZ DATOTEKA ---
+if "kupljene_dionice" not in st.session_state:
+    st.session_state.kupljene_dionice = {}
+if "povijest_trejdova" not in st.session_state:
+    st.session_state.povijest_trejdova = []
+# -----------------------------------------------------
 
 # 2. Naslov i gumb za osvježavanje
 st.title("🤖 Moj AI Financijski Terminal V13")
-st.caption("Profesionalni radar s ugrađenim RSI indikatorom, pametnim probojima i trajnom bazom podataka.")
+st.caption("Profesionalni radar s ugrađenim RSI indikatorom, pametnim probojima i stabilnom memorijom.")
 
 if st.button("🔄 RESTARTAJ TERMINAL I OSVJEŽI ANALIZU", use_container_width=True):
     st.cache_data.clear()
@@ -90,7 +57,7 @@ def analiziraj_sentiment(tekst):
     else:
         return score, "🟡 Neutralno"
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=300)
 def dohvati_podatke(ticker):
     try:
         dionica = yf.Ticker(ticker)
@@ -196,10 +163,11 @@ def dohvati_podatke(ticker):
 
 def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
     podaci_lista = []
-    for t in lista_tickera:
-        rezultat = dohvati_podatke(t)
-        if rezultat:
-            podaci_lista.append(rezultat)
+    with st.spinner("🤖 AI povlači podatke s burze..."):
+        for t in lista_tickera:
+            rezultat = dohvati_podatke(t)
+            if resultado := rezultat:
+                podaci_lista.append(resultado)
             
     if podaci_lista:
         df = pd.DataFrame(podaci_lista)
@@ -222,12 +190,10 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                 if t in st.session_state.kupljene_dionice:
                     if st.button(f"🔴 Odznači {t}", key=f"del_{kljuc_grafikona}_{t}"):
                         del st.session_state.kupljene_dionice[t]
-                        spremi_bazu()
                         st.rerun()
                 else:
                     if st.button(f"🟢 Kupio {t}", key=f"add_{kljuc_grafikona}_{t}"):
                         st.session_state.kupljene_dionice[t] = stavka["Cijena ($)"]
-                        spremi_bazu()
                         st.rerun()
 
         fig = px.bar(
@@ -252,7 +218,7 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                         st.caption(f"Izvor: {v['izvor']}")
                         st.write("---")
     else:
-        st.warning("Nije moguće učitati podatke.")
+        st.warning("Trenutno nema dostupnih podataka za odabranu grupu.")
 
 # TABS sučelje
 tab_portfolio, tab_history, tab0, tab1, tab2, tab3 = st.tabs([
@@ -267,3 +233,102 @@ tab_portfolio, tab_history, tab0, tab1, tab2, tab3 = st.tabs([
 # KARTICA ZA PORTFOLIO
 with tab_portfolio:
     st.header("Active Trades (Tvoje trenutne investicije)")
+    
+    if not st.session_state.kupljene_dionice:
+        st.info("Trenutno nemaš označenih kupljenih dionica. Klikni na ostale kartice i stisni gumb 'Kupio' pokraj dionice koju želiš pratiti.")
+    else:
+        portfolio_podaci = []
+        with st.spinner("🤖 AI osvježava tvoj portfelj..."):
+            for t, cijena_kupnje in list(st.session_state.kupljene_dionice.items()):
+                trenutni_rezultat = dohvati_podatke(t)
+                if trenutni_rezultat:
+                    trenutna_c = trenutni_rezultat["Cijena ($)"]
+                    moj_porast = ((trenutna_c - cijena_kupnje) / cijena_kupnje) * 100
+                    rsi_trenutni = trenutni_rezultat["RSI (14)"]
+                    
+                    if moj_porast <= -10.0:
+                        sugestija = "🚨 REŽI GUBITAK (-10% Stop)"
+                    elif rsi_trenutni != "N/A" and rsi_trenutni > 70:
+                        sugestija = "💰 UZMI PROFIT (RSI > 70)"
+                    elif moj_porast >= 15.0:
+                        sugestija = "💰 UZMI PROFIT (+15% Skok)"
+                    elif rsi_trenutni != "N/A" and rsi_trenutni > 65:
+                        sugestija = "⚠️ OPREZ (Bliži se vrhu)"
+                    else:
+                        sugestija = "🟢 DRŽI (U trendu je)"
+                    
+                    portfolio_podaci.append({
+                        "Ticker": t,
+                        "Moja Ulazna Cijena ($)": cijena_kupnje,
+                        "Trenutna Cijena ($)": trenutna_c,
+                        "Tvoj Profit/Gubitak (%)": moj_porast,
+                        "Dnevni Porast (%)": trenutni_rezultat["Promjena (%)"],
+                        "RSI (14)": rsi_trenutni,
+                        "AI Sugestija Prodaje": sugestija
+                    })
+        
+        if portfolio_podaci:
+            df_port = pd.DataFrame(portfolio_podaci)
+            st.dataframe(
+                df_port.style.format({
+                    "Moja Ulazna Cijena ($)": "{:.3f}",
+                    "Trenutna Cijena ($)": "{:.3f}",
+                    "Tvoj Profit/Gubitak (%)": "{:+.2f}%",
+                    "Dnevni Porast (%)": "{:+.2f}%"
+                }),
+                use_container_width=True, hide_index=True
+            )
+            
+            st.markdown("### 🏃‍♂️ Zatvori poziciju i zabilježi rezultat:")
+            port_kolone = st.columns(len(portfolio_podaci))
+            for idx, p in enumerate(portfolio_podaci):
+                with port_kolone[idx]:
+                    if st.button(f"❌ Prodano {p['Ticker']}", key=f"port_del_{p['Ticker']}"):
+                        st.session_state.povijest_trejdova.append({
+                            "Ticker": p["Ticker"],
+                            "Ulazna Cijena ($)": p["Moja Ulazna Cijena ($)"],
+                            "Izlazna Cijena ($)": p["Trenutna Cijena ($)"],
+                            "Konačni Rezultat (%)": p["Tvoj Profit/Gubitak (%)"]
+                        })
+                        del st.session_state.kupljene_dionice[p['Ticker']]
+                        st.rerun()
+
+# KARTICA ZA POVIJEST TRGOVANJA
+with tab_history:
+    st.header("Zatvorene Pozicije & Statistika")
+    if not st.session_state.povijest_trejdova:
+        st.info("Ovdje će se pojaviti tvoji završeni trejdovi nakon što ih prodaš u aplikaciji.")
+    else:
+        df_hist = pd.DataFrame(st.session_state.povijest_trejdova)
+        ukupni_postotak = df_hist["Konačni Rezultat (%)"].sum()
+        
+        st.metric(label="Ukupni kumulativni rezultat svih trejdova", value=f"{round(ukupni_postotak, 2)}%", delta=f"{round(ukupni_postotak, 2)}%")
+        
+        st.dataframe(
+            df_hist.style.format({
+                "Ulazna Cijena ($)": "{:.3f}",
+                "Izlazna Cijena ($)": "{:.3f}",
+                "Konačni Rezultat (%)": "{:+.2f}%"
+            }),
+            use_container_width=True, hide_index=True
+        )
+        
+        if st.button("🗑️ OČISTI CIJELU POVIJEST STATISTIKE", use_container_width=True):
+            st.session_state.povijest_trejdova = []
+            st.rerun()
+
+with tab0:
+    st.header("Zlato i Nafta (Glavni obrambeni instrumenti)")
+    prikazi_tablicu_i_graf(kat_makro, "graf_makro")
+
+with tab1:
+    st.header("Popis malih potencijala (Ubačen SOUN)")
+    prikazi_tablicu_i_graf(kat_penny, "graf_penny")
+
+with tab2:
+    st.header("Dionice s jakim katalizatorima vijesti")
+    prikazi_tablicu_i_graf(kat_catalyst, "graf_cat")
+
+with tab3:
+    st.header("Velike stabilne kompanije i HOOD")
+    prikazi_tablicu_i_graf(kat_divovi, "graf_div")
