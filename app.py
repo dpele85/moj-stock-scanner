@@ -3,20 +3,49 @@ import yfinance as yf
 import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
+import json
+import os
 
 # 1. Postavke stranice
 st.set_page_config(page_title="AI Financijski Terminal V13", layout="wide", initial_sidebar_state="collapsed")
 
-# --- STABILNA INICIJALIZACIJA MEMORIJE ---
+# --- TRAJNA POHRANA (UČITAVANJE I SPREMANJE U JSON) ---
+DATOTEKA_POHRANE = "portfolio.json"
+
+def ucitaj_trajne_podatke():
+    """Učitava portfolio i povijest iz JSON datoteke ako ona postoji."""
+    if os.path.exists(DATOTEKA_POHRANE):
+        try:
+            with open(DATOTEKA_POHRANE, "r", encoding="utf-8") as f:
+                podaci = json.load(f)
+                return podaci.get("kupljene_dionice", {}), list(podaci.get("povijest_trejdova", []))
+        except:
+            pass
+    return {}, []
+
+def spremi_trajne_podatke(kupljene, povijest):
+    """Zapisuje trenutne pozicije i povijest u JSON datoteku kako se ne bi izbrisali."""
+    try:
+        with open(DATOTEKA_POHRANE, "w", encoding="utf-8") as f:
+            json.dump({
+                "kupljene_dionice": kupljene,
+                "povijest_trejdova": povijest
+            }, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        st.error(f"Greška prilikom trajnog spremanja: {e}")
+
+# Inicijalizacija iz trajne datoteke umjesto praznog stanja
+trajne_dionice, trajna_povijest = ucitaj_trajne_podatke()
+
 if "kupljene_dionice" not in st.session_state:
-    st.session_state.kupljene_dionice = {}
+    st.session_state.kupljene_dionice = trajne_dionice
 if "povijest_trejdova" not in st.session_state:
-    st.session_state.povijest_trejdova = []
+    st.session_state.povijest_trejdova = trajna_povijest
 # -----------------------------------------------------
 
 # 2. Naslov i gumb za osvježavanje
 st.title("🤖 Moj AI Financijski Terminal V13")
-st.caption("Profesionalni radar s ugrađenim RSI indikatorom, pametnim probojima i stabilnom memorijom.")
+st.caption("Profesionalni radar s ugrađenim RSI indikatorom, pametnim probojima i trajnom memorijom na disku.")
 
 if st.button("🔄 RESTARTAJ TERMINAL I OSVJEŽI ANALIZU", use_container_width=True):
     st.cache_data.clear()
@@ -92,11 +121,10 @@ def dohvati_podatke(ticker):
         ukupni_sentiment_score = 0
         broj_pravih_vijesti = 0
         
-        # --- ROBUZNIJI POPRAVAK ZA DOHVAT VIJESTI ---
         try:
             vijesti_izvor = dionica.news
             if vijesti_izvor and isinstance(vijesti_izvor, list) and len(vijesti_izvor) > 0:
-                for v in vijesti_izvor[:5]:  # Povećano na max 5 vijesti
+                for v in vijesti_izvor[:5]:
                     naslov = v.get('title', '').strip()
                     izvor = v.get('publisher', 'Yahoo Finance')
                     link = v.get('link', '#')
@@ -111,7 +139,7 @@ def dohvati_podatke(ticker):
                             "link": link,
                             "ai_oznaka": oznaka
                         })
-        except Exception as e:
+        except:
             pass
         
         if len(pokupljene_vijesti) == 0:
@@ -128,11 +156,10 @@ def dohvati_podatke(ticker):
         else:
             konacni_sentiment = "🟡 NEUTRALAN"
             
-        # --- NOVI PAMETNIJI I SIGURNIJI UVJETI ZA STATUS ---
         if rsi_vrijednost is not None:
             if rsi_vrijednost > 70:
                 status = "⚠️ RISK (PREKUPLJENO)"
-            elif rsi_vrijednost < 33:  # BABA će sada odmah uloviti ovaj signal!
+            elif rsi_vrijednost < 33:
                 status = "🔥 SIGNAL KUPNJE"
             elif volume_score > 2.0 and postotak > 2:
                 if rsi_vrijednost < 60:
@@ -226,7 +253,11 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                             }
                         
                         st.session_state.povijest_trejdova.append(f"Kupljeno {kolicina_unos} komada {ticker} po ${cijena_unos}")
-                        st.success(f"Uspješno spremljeno: {ticker}")
+                        
+                        # OKIDAČ ZA TRAJNO SPREMANJE NA DISK
+                        spremi_trajne_podatke(st.session_state.kupljene_dionice, st.session_state.povijest_trejdova)
+                        
+                        st.success(f"Uspješno spremljeno na disk: {ticker}")
                         st.rerun()
                     
         with st.expander("📰 Pogledaj AI vijesti i sentiment za ove dionice"):
@@ -317,6 +348,8 @@ with tab1:
         if st.button("🗑️ OBRIŠI SVE POZICIJE I RESETIRAJ PORTFOLIO", use_container_width=True):
             st.session_state.kupljene_dionice = {}
             st.session_state.povijest_trejdova = []
+            # Brišemo podatke i iz datoteke na disku prilikom reseta
+            spremi_trajne_podatke({}, [])
             st.rerun()
             
     if st.session_state.povijest_trejdova:
