@@ -1,6 +1,6 @@
-streamlit
+streamlit==1.35.0
 yfinance
 pandas
 plotly
 textblob
-streamlit-gsheets
+st-gsheets-connection
