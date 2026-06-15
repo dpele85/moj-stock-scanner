@@ -3,5 +3,4 @@ yfinance
 pandas
 plotly
 textblob
-st-theme
 streamlit-gsheets
