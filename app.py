@@ -194,21 +194,21 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
         )
         st.plotly_chart(fig_promjena, use_container_width=True)
 
-        # --- NOVA PAMETNA FORMA ZA KUPNJU PREKO POPOVERA ---
+        # --- NOVA PAMETNA FORMA ZA KUPNJU PREKO POPOVERA (POPRAVLJENA GREŠKA MIN_VALUE) ---
         st.markdown("### 🛒 Unesi kupljene pozicije:")
         mini_kolone = st.columns(len(df))
         
         for i, redak in df.iterrows():
             with mini_kolone[i]:
                 ticker = redak['Ticker']
-                # Popover stvara lijepi skočni prozorčić za mobitele i računala
                 with st.popover(f"Kupi {ticker}", use_container_width=True):
                     st.write(f"**Nova transakcija za {ticker}**")
                     kolicina_unos = st.number_input("Količina dionica:", min_value=0.001, value=1.0, step=1.0, key=f"qty_{kljuc_grafikona}_{ticker}")
-                    cijena_unos = st.number_input("Kupljeno po cijeni ($):", min_value=0.01, value=float(redak['Cijena ($)']), step=0.01, key=f"prc_{kljuc_grafikona}_{ticker}")
+                    
+                    # POPRAVAK: min_value=0.0 i format za 3 decimale zbog jeftinih dionica
+                    cijena_unos = st.number_input("Kupljeno po cijeni ($):", min_value=0.0, value=float(redak['Cijena ($)']), step=0.01, format="%.3f", key=f"prc_{kljuc_grafikona}_{ticker}")
                     
                     if st.button("Potvrdi i spremi", key=f"btn_{kljuc_grafikona}_{ticker}", use_container_width=True):
-                        # Ako dionica već postoji, računa se ponderirani prosjek cijene
                         if ticker in st.session_state.kupljene_dionice:
                             stara_kol = st.session_state.kupljene_dionice[ticker]['kolicina']
                             stara_cij = st.session_state.kupljene_dionice[ticker]['cijena']
@@ -247,7 +247,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🏛️ Globalni Divovi"
 ])
 
-# --- TAB 1: PORTFOLIO S AUTOMATSKIM REZULTATOM (ZARADA / GUBITAK) ---
+# --- TAB 1: PORTFOLIO S RAČUNANJEM DOBITI/GUBITKA (P&L) UŽIVO ---
 with tab1:
     st.header("💼 Vaš Portfolio i Praćenje Zarade")
     
@@ -258,7 +258,6 @@ with tab1:
         ukupno_investirano = 0.0
         ukupna_trenutna_vrijednost = 0.0
         
-        # Prolazak kroz sve kupljene dionice i računanje zarade uživo
         for t, detalji in st.session_state.kupljene_dionice.items():
             trenutni_podaci = dohvati_podatke(t)
             if trenutni_podaci:
@@ -285,7 +284,7 @@ with tab1:
                     "Dobit / Gubitak (%)": round(pnl_postotak, 2)
                 })
         
-        # 1. Prikaz glavnih metričkih kartica na vrhu portfolija
+        # Prikaz ukupnih rezultata u lijepim karticama
         ukupni_pnl_usd = ukupna_trenutna_vrijednost - ukupno_investirano
         ukupni_pnl_pct = (ukupni_pnl_usd / ukupno_investirano) * 100 if ukupno_investirano > 0 else 0
         
@@ -297,10 +296,9 @@ with tab1:
         st.markdown("---")
         st.subheader("📋 Detaljni pregled otvorenih pozicija:")
         
-        # 2. Tablica s detaljnim izračunom za svaku dionicu posebno
         df_port = pd.DataFrame(portfolio_podaci)
         
-        # Funkcija za bojanje profita u zeleno i gubitka u crveno unutar tablice
+        # Dinamičko bojanje tablice (Zeleno za plus, crveno za minus)
         def obojaj_pnl(val):
             color = 'green' if val > 0 else ('red' if val < 0 else 'black')
             return f'color: {color}; font-weight: bold;'
@@ -318,7 +316,6 @@ with tab1:
             use_container_width=True, hide_index=True
         )
         
-        # Gumb za brisanje cijelog portfolija ako želiš krenuti ispočetka
         if st.button("🗑️ OBRIŠI SVE POZICIJE I RESETIRAJ PORTFOLIO", use_container_width=True):
             st.session_state.kupljene_dionice = {}
             st.session_state.povijest_trejdova = []
