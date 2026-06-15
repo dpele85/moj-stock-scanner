@@ -3,19 +3,43 @@ import yfinance as yf
 import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
+import json
+import os
 
 # 1. Postavke stranice
-st.set_page_config(page_title="AI Financijski Terminal V11", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="AI Financijski Terminal V13", layout="wide", initial_sidebar_state="collapsed")
 
-# Inicijalizacija baze za aktivne i zatvorene dionice
-if "kupljene_dionice" not in st.session_state:
-    st.session_state.kupljene_dionice = {}
-if "povijest_trejdova" not in st.session_state:
-    st.session_state.povijest_trejdova = []
+# --- FUNKCIJE ZA TRAJNO SPREMANJE PODATAKA ---
+BAZA_PORTFOLIO = "baza_portfolio.json"
+BAZA_POVIJEST = "baza_povijest.json"
+
+def ucitaj_bazu():
+    if os.path.exists(BAZA_PORTFOLIO):
+        with open(BAZA_PORTFOLIO, "r") as f:
+            st.session_state.kupljene_dionice = json.load(f)
+    else:
+        st.session_state.kupljene_dionice = {}
+        
+    if os.path.exists(BAZA_POVIJEST):
+        with open(BAZA_POVIJEST, "r") as f:
+            st.session_state.povijest_trejdova = json.load(f)
+    else:
+        st.session_state.povijest_trejdova = []
+
+def spremi_bazu():
+    with open(BAZA_PORTFOLIO, "w") as f:
+        json.dump(st.session_state.kupljene_dionice, f)
+    with open(BAZA_POVIJEST, "w") as f:
+        json.dump(st.session_state.povijest_trejdova, f)
+
+# Inicijalizacija i automatsko učitavanje pri pokretanju
+if "kupljene_dionice" not in st.session_state or "povijest_trejdova" not in st.session_state:
+    ucitaj_bazu()
+# ---------------------------------------------
 
 # 2. Naslov i gumb za osvježavanje
-st.title("🤖 Moj AI Financijski Terminal V11")
-st.caption("Profesionalni radar s ugrađenim RSI indikatorom, upravljanjem rizikom i poviješću zatvorenih trejdova.")
+st.title("🤖 Moj AI Financijski Terminal V13")
+st.caption("Profesionalni radar s ugrađenim RSI indikatorom, pametnim probojima i trajnom bazom podataka.")
 
 if st.button("🔄 RESTARTAJ TERMINAL I OSVJEŽI ANALIZU", use_container_width=True):
     st.cache_data.clear()
@@ -127,14 +151,17 @@ def dohvati_podatke(ticker):
             konacni_sentiment = "⏳ ČEKAM"
             
         if rsi_vrijednost is not None:
-            if rsi_vrijednost < 32 and (konacni_sentiment == "🟢 POZITIVAN" or volume_score > 1.2):
-                status = "🔥 SIGNAL KUPNJE"
-            elif rsi_vrijednost > 70:
+            if rsi_vrijednost > 70:
                 status = "⚠️ RISK (PREKUPLJENO)"
+            elif rsi_vrijednost < 32 and (konacni_sentiment == "🟢 POZITIVAN" or volume_score > 1.2):
+                status = "🔥 SIGNAL KUPNJE"
+            elif volume_score > 2.0 and postotak > 2:
+                if rsi_vrijednost < 60:
+                    status = "🚀 PROBOJ (MOŽE SE KUPITI)"
+                else:
+                    status = "⚠️ PROBOJ (RIZIK VRHA)"
             elif rsi_vrijednost < 35:
                 status = "🛒 JEFTINO (PRATI)"
-            elif volume_score > 2.0 and postotak > 2:
-                status = "🚀 PROBOJ (BREAKOUT)"
             else:
                 status = "⏳ PROMATRAJ"
         else:
@@ -185,10 +212,12 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                 if t in st.session_state.kupljene_dionice:
                     if st.button(f"🔴 Odznači {t}", key=f"del_{kljuc_grafikona}_{t}"):
                         del st.session_state.kupljene_dionice[t]
+                        spremi_bazu()  # Trajno spremanje promjene
                         st.rerun()
                 else:
                     if st.button(f"🟢 Kupio {t}", key=f"add_{kljuc_grafikona}_{t}"):
                         st.session_state.kupljene_dionice[t] = stavka["Cijena ($)"]
+                        spremi_bazu()  # Trajno spremanje promjene
                         st.rerun()
 
         fig = px.bar(
@@ -215,7 +244,7 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
     else:
         st.warning("Nije moguće učitati podatke.")
 
-# TABS sučelje s dodanim portfeljem i poviješću
+# TABS sučelje
 tab_portfolio, tab_history, tab0, tab1, tab2, tab3 = st.tabs([
     "💼 MOJE OTVORENE POZICIJE",
     "📜 POVIJEST TREJDOVA", 
@@ -225,11 +254,13 @@ tab_portfolio, tab_history, tab0, tab1, tab2, tab3 = st.tabs([
     "🏛️ Globalni Divovi"
 ])
 
-# KARTICA ZA PORTFOLIO (Aktivni trejdovi)
+# KARTICA ZA PORTFOLIO
 with tab_portfolio:
     st.header("Active Trades (Tvoje trenutne investicije)")
+    st.caption("🟢 SINKRONIZIRANO S BAZOM PODATAKA (Pozicije su sigurne i spremljene)")
+    
     if not st.session_state.kupljene_dionice:
-        st.info("Trenutno nemaš označenih kupljenih dionica. Klikni na ostale kartice i stisni gumb 'Kupio' pokraj dionice koju želiš pratiti.")
+        st.info("Trenutno nemaš osnačenih kupljenih dionica. Klikni na ostale kartice i stisni gumb 'Kupio' pokraj dionice koju želiš pratiti.")
     else:
         portfolio_podaci = []
         for t, cijena_kupnje in list(st.session_state.kupljene_dionice.items()):
@@ -276,7 +307,6 @@ with tab_portfolio:
             port_kolone = st.columns(len(portfolio_podaci))
             for idx, p in enumerate(portfolio_podaci):
                 with port_kolone[idx]:
-                    # Kada klikneš ovaj gumb, podaci se sele u povijest prije brisanja
                     if st.button(f"❌ Prodano {p['Ticker']}", key=f"port_del_{p['Ticker']}"):
                         st.session_state.povijest_trejdova.append({
                             "Ticker": p["Ticker"],
@@ -285,19 +315,17 @@ with tab_portfolio:
                             "Konačni Rezultat (%)": p["Tvoj Profit/Gubitak (%)"]
                         })
                         del st.session_state.kupljene_dionice[p['Ticker']]
+                        spremi_bazu()  # Trajno spremanje promjene
                         st.rerun()
 
-# KARTICA ZA POVIJEST TRGOVANJA (Statistika retroaktivno)
+# KARTICA ZA POVIJEST TRGOVANJA
 with tab_history:
     st.header("Zatvorene Pozicije & Statistika")
     if not st.session_state.povijest_trejdova:
         st.info("Ovdje će se pojaviti tvoji završeni trejdovi nakon što ih prodaš u aplikaciji.")
     else:
         df_hist = pd.DataFrame(st.session_state.povijest_trejdova)
-        
-        # Izračun ukupnog skora za brzi pregled uspješnosti
         ukupni_postotak = df_hist["Konačni Rezultat (%)"].sum()
-        boja_skora = "🟢" if ukupni_postotak >= 0 else "🔴"
         
         st.metric(label="Ukupni kumulativni rezultat svih trejdova", value=f"{round(ukupni_postotak, 2)}%", delta=f"{round(ukupni_postotak, 2)}%")
         
@@ -312,6 +340,7 @@ with tab_history:
         
         if st.button("🗑️ OČISTI CIJELU POVIJEST STATISTIKE", use_container_width=True):
             st.session_state.povijest_trejdova = []
+            spremi_bazu()  # Trajno brisanje povijesti
             st.rerun()
 
 with tab0:
