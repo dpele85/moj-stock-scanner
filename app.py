@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
-from streamlit_gsheets import GSheetsConnection
+from st_gsheets_connection import GSheetsConnection
 
 # 1. Postavke stranice
 st.set_page_config(page_title="AI Financijski Terminal V15", layout="wide", initial_sidebar_state="collapsed")
