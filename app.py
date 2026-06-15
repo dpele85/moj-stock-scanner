@@ -92,15 +92,16 @@ def dohvati_podatke(ticker):
         ukupni_sentiment_score = 0
         broj_pravih_vijesti = 0
         
+        # --- ROBUZNIJI POPRAVAK ZA DOHVAT VIJESTI ---
         try:
             vijesti_izvor = dionica.news
-            if vijesti_izvor and len(vijesti_izvor) > 0:
-                for v in vijesti_izvor[:3]:
+            if vijesti_izvor and isinstance(vijesti_izvor, list) and len(vijesti_izvor) > 0:
+                for v in vijesti_izvor[:5]:  # Povećano na max 5 vijesti
                     naslov = v.get('title', '').strip()
-                    izvor = v.get('publisher', 'Nepoznato')
+                    izvor = v.get('publisher', 'Yahoo Finance')
                     link = v.get('link', '#')
                     
-                    if naslov and naslov != "Nema naslova" and izvor != "Nepoznato":
+                    if naslov:
                         score, oznaka = analiziraj_sentiment(naslov)
                         ukupni_sentiment_score += score
                         broj_pravih_vijesti += 1
@@ -110,34 +111,35 @@ def dohvati_podatke(ticker):
                             "link": link,
                             "ai_oznaka": oznaka
                         })
-        except:
+        except Exception as e:
             pass
         
         if len(pokupljene_vijesti) == 0:
             pokupljene_vijesti.append({
-                "naslov": "Tržište trenutno miruje. Nove AI vijesti stižu s otvaranjem burze.",
+                "naslov": "Nema novih objava na Yahoo Finance za ovaj ticker u zadnja 24h.",
                 "izvor": "Sustav Radara",
                 "link": "#",
-                "ai_oznaka": "🟡 Neutralno (Čekanje)"
+                "ai_oznaka": "🟡 Neutralno"
             })
         
         if broj_pravih_vijesti > 0:
             prosjek = ukupni_sentiment_score / broj_pravih_vijesti
             konacni_sentiment = "🟢 POZITIVAN" if prosjek > 0.05 else ("🔴 NEGATIVAN" if prosjek < -0.05 else "🟡 NEUTRALAN")
         else:
-            konacni_sentiment = "⏳ ČEKAM"
+            konacni_sentiment = "🟡 NEUTRALAN"
             
+        # --- NOVI PAMETNIJI I SIGURNIJI UVJETI ZA STATUS ---
         if rsi_vrijednost is not None:
             if rsi_vrijednost > 70:
                 status = "⚠️ RISK (PREKUPLJENO)"
-            elif rsi_vrijednost < 32 and (konacni_sentiment == "🟢 POZITIVAN" or volume_score > 1.2):
+            elif rsi_vrijednost < 33:  # BABA će sada odmah uloviti ovaj signal!
                 status = "🔥 SIGNAL KUPNJE"
             elif volume_score > 2.0 and postotak > 2:
                 if rsi_vrijednost < 60:
                     status = "🚀 PROBOJ (MOŽE SE KUPITI)"
                 else:
                     status = "⚠️ PROBOJ (RIZIK VRHA)"
-            elif rsi_vrijednost < 35:
+            elif rsi_vrijednost < 38:
                 status = "🛒 JEFTINO (PRATI)"
             else:
                 status = "⏳ PROMATRAJ"
@@ -194,7 +196,6 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
         )
         st.plotly_chart(fig_promjena, use_container_width=True)
 
-        # --- NOVA PAMETNA FORMA ZA KUPNJU PREKO POPOVERA (POPRAVLJENA GREŠKA MIN_VALUE) ---
         st.markdown("### 🛒 Unesi kupljene pozicije:")
         mini_kolone = st.columns(len(df))
         
@@ -204,8 +205,6 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                 with st.popover(f"Kupi {ticker}", use_container_width=True):
                     st.write(f"**Nova transakcija za {ticker}**")
                     kolicina_unos = st.number_input("Količina dionica:", min_value=0.001, value=1.0, step=1.0, key=f"qty_{kljuc_grafikona}_{ticker}")
-                    
-                    # POPRAVAK: min_value=0.0 i format za 3 decimale zbog jeftinih dionica
                     cijena_unos = st.number_input("Kupljeno po cijeni ($):", min_value=0.0, value=float(redak['Cijena ($)']), step=0.01, format="%.3f", key=f"prc_{kljuc_grafikona}_{ticker}")
                     
                     if st.button("Potvrdi i spremi", key=f"btn_{kljuc_grafikona}_{ticker}", use_container_width=True):
@@ -232,9 +231,10 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                     
         with st.expander("📰 Pogledaj AI vijesti i sentiment za ove dionice"):
             for dionica_info in podaci_lista:
-                st.write(f"**{dionica_info['Ticker']}** - Sentiment: {dionica_info['AI Sentiment']}")
+                st.write(f"**{dionica_info['Ticker']}** | Ukupni AI Sentiment: **{dionica_info['AI Sentiment']}**")
                 for v in dionica_info['Vijesti']:
-                    st.caption(f"[{v['izvor']}] ({v['ai_oznaka']}) - [ {v['naslov']} ]({v['link']})")
+                    st.write(f"- {v['ai_oznaka']} | [{v['izvor']}]({v['link']}): *{v['naslov']}*")
+                st.markdown("---")
     else:
         st.error("Nije moguće dohvatiti podatke.")
 
@@ -284,7 +284,6 @@ with tab1:
                     "Dobit / Gubitak (%)": round(pnl_postotak, 2)
                 })
         
-        # Prikaz ukupnih rezultata u lijepim karticama
         ukupni_pnl_usd = ukupna_trenutna_vrijednost - ukupno_investirano
         ukupni_pnl_pct = (ukupni_pnl_usd / ukupno_investirano) * 100 if ukupno_investirano > 0 else 0
         
@@ -298,7 +297,6 @@ with tab1:
         
         df_port = pd.DataFrame(portfolio_podaci)
         
-        # Dinamičko bojanje tablice (Zeleno za plus, crveno za minus)
         def obojaj_pnl(val):
             color = 'green' if val > 0 else ('red' if val < 0 else 'black')
             return f'color: {color}; font-weight: bold;'
