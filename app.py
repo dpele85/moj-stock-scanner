@@ -5,17 +5,18 @@ import plotly.express as px
 from textblob import TextBlob
 
 # 1. Postavke stranice
-st.set_page_config(page_title="AI Financijski Terminal V11", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="AI Financijski Terminal V13", layout="wide", initial_sidebar_state="collapsed")
 
-# Inicijalizacija baze za aktivne i zatvorene dionice
+# --- STABILNA INICIJALIZACIJA MEMORIJE ---
 if "kupljene_dionice" not in st.session_state:
     st.session_state.kupljene_dionice = {}
 if "povijest_trejdova" not in st.session_state:
     st.session_state.povijest_trejdova = []
+# -----------------------------------------------------
 
 # 2. Naslov i gumb za osvježavanje
-st.title("🤖 Moj AI Financijski Terminal V11")
-st.caption("Profesionalni radar s ugrađenim RSI indikatorom, upravljanjem rizikom i poviješću zatvorenih trejdova.")
+st.title("🤖 Moj AI Financijski Terminal V13")
+st.caption("Profesionalni radar s ugrađenim RSI indikatorom, pametnim probojima i stabilnom memorijom.")
 
 if st.button("🔄 RESTARTAJ TERMINAL I OSVJEŽI ANALIZU", use_container_width=True):
     st.cache_data.clear()
@@ -56,7 +57,7 @@ def analiziraj_sentiment(tekst):
     else:
         return score, "🟡 Neutralno"
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=300)
 def dohvati_podatke(ticker):
     try:
         dionica = yf.Ticker(ticker)
@@ -127,14 +128,17 @@ def dohvati_podatke(ticker):
             konacni_sentiment = "⏳ ČEKAM"
             
         if rsi_vrijednost is not None:
-            if rsi_vrijednost < 32 and (konacni_sentiment == "🟢 POZITIVAN" or volume_score > 1.2):
-                status = "🔥 SIGNAL KUPNJE"
-            elif rsi_vrijednost > 70:
+            if rsi_vrijednost > 70:
                 status = "⚠️ RISK (PREKUPLJENO)"
+            elif rsi_vrijednost < 32 and (konacni_sentiment == "🟢 POZITIVAN" or volume_score > 1.2):
+                status = "🔥 SIGNAL KUPNJE"
+            elif volume_score > 2.0 and postotak > 2:
+                if rsi_vrijednost < 60:
+                    status = "🚀 PROBOJ (MOŽE SE KUPITI)"
+                else:
+                    status = "⚠️ PROBOJ (RIZIK VRHA)"
             elif rsi_vrijednost < 35:
                 status = "🛒 JEFTINO (PRATI)"
-            elif volume_score > 2.0 and postotak > 2:
-                status = "🚀 PROBOJ (BREAKOUT)"
             else:
                 status = "⏳ PROMATRAJ"
         else:
@@ -159,10 +163,11 @@ def dohvati_podatke(ticker):
 
 def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
     podaci_lista = []
-    for t in lista_tickera:
-        rezultat = dohvati_podatke(t)
-        if rezultat:
-            podaci_lista.append(rezultat)
+    with st.spinner("🤖 AI povlači podatke s burze..."):
+        for t in lista_tickera:
+            rezultat = dohvati_podatke(t)
+            if rezultat:
+                podaci_lista.append(rezultat)
             
     if podaci_lista:
         df = pd.DataFrame(podaci_lista)
@@ -213,9 +218,9 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
                         st.caption(f"Izvor: {v['izvor']}")
                         st.write("---")
     else:
-        st.warning("Nije moguće učitati podatke.")
+        st.warning("Trenutno nema dostupnih podataka za odabranu grupu.")
 
-# TABS sučelje s dodanim portfeljem i poviješću
+# TABS sučelje
 tab_portfolio, tab_history, tab0, tab1, tab2, tab3 = st.tabs([
     "💼 MOJE OTVORENE POZICIJE",
     "📜 POVIJEST TREJDOVA", 
@@ -225,40 +230,42 @@ tab_portfolio, tab_history, tab0, tab1, tab2, tab3 = st.tabs([
     "🏛️ Globalni Divovi"
 ])
 
-# KARTICA ZA PORTFOLIO (Aktivni trejdovi)
+# KARTICA ZA PORTFOLIO
 with tab_portfolio:
     st.header("Active Trades (Tvoje trenutne investicije)")
+    
     if not st.session_state.kupljene_dionice:
         st.info("Trenutno nemaš označenih kupljenih dionica. Klikni na ostale kartice i stisni gumb 'Kupio' pokraj dionice koju želiš pratiti.")
     else:
         portfolio_podaci = []
-        for t, cijena_kupnje in list(st.session_state.kupljene_dionice.items()):
-            trenutni_rezultat = dohvati_podatke(t)
-            if trenutni_rezultat:
-                trenutna_c = trenutni_rezultat["Cijena ($)"]
-                moj_porast = ((trenutna_c - cijena_kupnje) / cijena_kupnje) * 100
-                rsi_trenutni = trenutni_rezultat["RSI (14)"]
-                
-                if moj_porast <= -10.0:
-                    sugestija = "🚨 REŽI GUBITAK (-10% Stop)"
-                elif rsi_trenutni != "N/A" and rsi_trenutni > 70:
-                    sugestija = "💰 UZMI PROFIT (RSI > 70)"
-                elif moj_porast >= 15.0:
-                    sugestija = "💰 UZMI PROFIT (+15% Skok)"
-                elif rsi_trenutni != "N/A" and rsi_trenutni > 65:
-                    sugestija = "⚠️ OPREZ (Bliži se vrhu)"
-                else:
-                    sugestija = "🟢 DRŽI (U trendu je)"
-                
-                portfolio_podaci.append({
-                    "Ticker": t,
-                    "Moja Ulazna Cijena ($)": cijena_kupnje,
-                    "Trenutna Cijena ($)": trenutna_c,
-                    "Tvoj Profit/Gubitak (%)": moj_porast,
-                    "Dnevni Porast (%)": trenutni_rezultat["Promjena (%)"],
-                    "RSI (14)": rsi_trenutni,
-                    "AI Sugestija Prodaje": sugestija
-                })
+        with st.spinner("🤖 AI osvježava tvoj portfelj..."):
+            for t, cijena_kupnje in list(st.session_state.kupljene_dionice.items()):
+                trenutni_rezultat = dohvati_podatke(t)
+                if trenutni_rezultat:
+                    trenutna_c = trenutni_rezultat["Cijena ($)"]
+                    moj_porast = ((trenutna_c - cijena_kupnje) / cijena_kupnje) * 100
+                    rsi_trenutni = trenutni_rezultat["RSI (14)"]
+                    
+                    if moj_porast <= -10.0:
+                        sugestija = "🚨 REŽI GUBITAK (-10% Stop)"
+                    elif rsi_trenutni != "N/A" and rsi_trenutni > 70:
+                        sugestija = "💰 UZMI PROFIT (RSI > 70)"
+                    elif moj_porast >= 15.0:
+                        sugestija = "💰 UZMI PROFIT (+15% Skok)"
+                    elif rsi_trenutni != "N/A" and rsi_trenutni > 65:
+                        sugestija = "⚠️ OPREZ (Bliži se vrhu)"
+                    else:
+                        sugestija = "🟢 DRŽI (U trendu je)"
+                    
+                    portfolio_podaci.append({
+                        "Ticker": t,
+                        "Moja Ulazna Cijena ($)": cijena_kupnje,
+                        "Trenutna Cijena ($)": trenutna_c,
+                        "Tvoj Profit/Gubitak (%)": moj_porast,
+                        "Dnevni Porast (%)": trenutni_rezultat["Promjena (%)"],
+                        "RSI (14)": rsi_trenutni,
+                        "AI Sugestija Prodaje": sugestija
+                    })
         
         if portfolio_podaci:
             df_port = pd.DataFrame(portfolio_podaci)
@@ -276,7 +283,6 @@ with tab_portfolio:
             port_kolone = st.columns(len(portfolio_podaci))
             for idx, p in enumerate(portfolio_podaci):
                 with port_kolone[idx]:
-                    # Kada klikneš ovaj gumb, podaci se sele u povijest prije brisanja
                     if st.button(f"❌ Prodano {p['Ticker']}", key=f"port_del_{p['Ticker']}"):
                         st.session_state.povijest_trejdova.append({
                             "Ticker": p["Ticker"],
@@ -287,17 +293,14 @@ with tab_portfolio:
                         del st.session_state.kupljene_dionice[p['Ticker']]
                         st.rerun()
 
-# KARTICA ZA POVIJEST TRGOVANJA (Statistika retroaktivno)
+# KARTICA ZA POVIJEST TRGOVANJA
 with tab_history:
     st.header("Zatvorene Pozicije & Statistika")
     if not st.session_state.povijest_trejdova:
         st.info("Ovdje će se pojaviti tvoji završeni trejdovi nakon što ih prodaš u aplikaciji.")
     else:
         df_hist = pd.DataFrame(st.session_state.povijest_trejdova)
-        
-        # Izračun ukupnog skora za brzi pregled uspješnosti
         ukupni_postotak = df_hist["Konačni Rezultat (%)"].sum()
-        boja_skora = "🟢" if ukupni_postotak >= 0 else "🔴"
         
         st.metric(label="Ukupni kumulativni rezultat svih trejdova", value=f"{round(ukupni_postotak, 2)}%", delta=f"{round(ukupni_postotak, 2)}%")
         
