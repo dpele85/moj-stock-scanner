@@ -7,7 +7,7 @@ from textblob import TextBlob
 # 1. Postavke stranice
 st.set_page_config(page_title="AI Financijski Terminal V13", layout="wide", initial_sidebar_state="collapsed")
 
-# --- STABILNA INICIJALIZACIJA MEMORIJE BEZ DATOTEKA ---
+# --- STABILNA INICIJALIZACIJA MEMORIJE ---
 if "kupljene_dionice" not in st.session_state:
     st.session_state.kupljene_dionice = {}
 if "povijest_trejdova" not in st.session_state:
@@ -166,8 +166,8 @@ def prikazi_tablicu_i_graf(lista_tickera, kljuc_grafikona):
     with st.spinner("🤖 AI povlači podatke s burze..."):
         for t in lista_tickera:
             rezultat = dohvati_podatke(t)
-            if resultado := rezultat:
-                podaci_lista.append(resultado)
+            if rezultat:
+                podaci_lista.append(rezultat)
             
     if podaci_lista:
         df = pd.DataFrame(podaci_lista)
