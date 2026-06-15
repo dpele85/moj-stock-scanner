@@ -32,7 +32,6 @@ def izracunaj_rsi(history_df, period=14):
 
 # 4. Funkcija za AI Sentiment
 def analiziraj_sentiment(ticker):
-    # Simulacija analize vijesti
     tekst = f"Tržište za {ticker} pokazuje jake trendove i visoku volatilnost."
     analysis = TextBlob(tekst)
     if analysis.sentiment.polarity > 0: return "🟢 Bullish (Pozitivno)"
@@ -47,18 +46,25 @@ def prikazi_dionice(lista_dionica):
         st.write(f"---")
         col1, col2 = st.columns([3, 1])
         
+        # Preuzimanje podataka
         df = yf.download(ticker, period="3mo")
+        
         if not df.empty:
+            # Popravak formata podataka
+            df = df.reset_index()
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+            
             with col1:
-                fig = px.line(df, y='Close', title=f"Analiza cijene: {ticker}")
+                fig = px.line(df, x='Date', y='Close', title=f"Analiza cijene: {ticker}")
                 st.plotly_chart(fig, use_container_width=True)
+            
             with col2:
                 st.write(f"### {ticker}")
                 rsi = izracunaj_rsi(df)
                 
                 if rsi:
                     st.metric("RSI Indikator", f"{rsi:.2f}")
-                    # Signal za kupnju/prodaju
                     if rsi < 30:
                         st.success("STATUS: KUPUJ (Preprodano)")
                     elif rsi > 70:
@@ -68,7 +74,7 @@ def prikazi_dionice(lista_dionica):
                 
                 st.write(f"**AI Sentiment:** {analiziraj_sentiment(ticker)}")
         else:
-            st.warning(f"Podaci za {ticker} nisu dostupni.")
+            st.warning(f"Podaci za {ticker} trenutno nisu dostupni.")
 
 with tab1: prikazi_dionice(kat_makro)
 with tab2: prikazi_dionice(kat_penny)
