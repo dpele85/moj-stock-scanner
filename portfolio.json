@@ -1,5 +1,37 @@
 {
-    "cash": 10000.0,
-    "kupljene_dionice": {},
-    "povijest_trejdova": []
+    "cash": 999.9279899999995,
+    "kupljene_dionice": {
+        "CL=F": {
+            "cijena": 75.02,
+            "kolicina": 19.995
+        },
+        "TRVN": {
+            "cijena": 0.001,
+            "kolicina": 1500000.0
+        },
+        "SOUN": {
+            "cijena": 6.99,
+            "kolicina": 214.592
+        },
+        "ASTS": {
+            "cijena": 83.31,
+            "kolicina": 18.005
+        },
+        "NIO": {
+            "cijena": 5.006,
+            "kolicina": 299.64
+        },
+        "BABA": {
+            "cijena": 110.12,
+            "kolicina": 13.622
+        }
+    },
+    "povijest_trejdova": [
+        "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen BABA (13.622 kom) po $110.12 ($Iznos: 1500.0)",
+        "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen NIO (299.64 kom) po $5.006 ($Iznos: 1500.0)",
+        "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen ASTS (18.005 kom) po $83.31 ($Iznos: 1500.0)",
+        "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen SOUN (214.592 kom) po $6.99 ($Iznos: 1500.0)",
+        "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen TRVN (1500000.0 kom) po $0.001 ($Iznos: 1500.0)",
+        "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen CL=F (19.995 kom) po $75.02 ($Iznos: 1500.0)"
+    ]
 }
