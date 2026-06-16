@@ -5,7 +5,6 @@ on:
     - cron: '0 * * * *' # Pokreće se automatski na početku svakog sata
   workflow_dispatch: # Omogućuje ti gumb na GitHubu da ga pokreneš ručno kad god želiš
 
-# OVAJ DIO DAJE KLJUČ ROBOTU ZA SPREMANJE U PORTFOLIO.JSON:
 permissions:
   contents: write
 
@@ -29,9 +28,11 @@ jobs:
         run: python bot_engine.py
 
       - name: Trajno spremi promjene u portfolio.json
+          # OVAJ DIO ISPOD SADA SIGURNO SPAJA PROMJENE IZ STREAMLITA I ROBOTA:
         run: |
           git config --global user.name "AI Trading Bot"
           git config --global user.email "bot@ai-terminal.local"
           git add portfolio.json
           git commit -m "Automatski trejd: ažuriran portfolio pozadinski" || echo "Nema novih trejdova."
+          git pull --rebase origin main
           git push
