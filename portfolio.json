@@ -1,0 +1,11 @@
+{
+    "kupljene_dionice": {
+        "ASTS": {
+            "cijena": 82.92,
+            "kolicina": 5.0
+        }
+    },
+    "povijest_trejdova": [
+        "Kupljeno 5.0 komada ASTS po $82.92"
+    ]
+}
