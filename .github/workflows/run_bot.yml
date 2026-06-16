@@ -1,0 +1,33 @@
+name: Pokreni AI Pozadinskog Trgovca
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Pokreće se automatski na početku svakog sata
+  workflow_dispatch: # Omogućuje ti gumb na GitHubu da ga pokreneš ručno kad god želiš
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preuzmi kod s repozitorija
+        uses: actions/checkout@v4
+
+      - name: Instaliraj Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instaliraj pakete za burzu
+        run: |
+          pip install yfinance pandas textblob
+
+      - name: Izvrši trgovanje
+        run: python bot_engine.py
+
+      - name: Trajno spremi promjene u portfolio.json
+        run: |
+          git config --global user.name "AI Trading Bot"
+          git config --global user.email "bot@ai-terminal.local"
+          git add portfolio.json
+          git commit -m "Automatski trejd: ažuriran portfolio pozadinski" || echo "Nema novih trejdova."
+          git push
