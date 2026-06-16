@@ -5,6 +5,10 @@ on:
     - cron: '0 * * * *' # Pokreće se automatski na početku svakog sata
   workflow_dispatch: # Omogućuje ti gumb na GitHubu da ga pokreneš ručno kad god želiš
 
+# OVAJ DIO DAJE KLJUČ ROBOTU ZA SPREMANJE U PORTFOLIO.JSON:
+permissions:
+  contents: write
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
