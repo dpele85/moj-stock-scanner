@@ -3,9 +3,14 @@
         "ASTS": {
             "cijena": 82.92,
             "kolicina": 5.0
+        },
+        "NIO": {
+            "cijena": 5.03,
+            "kolicina": 20.0
         }
     },
     "povijest_trejdova": [
-        "Kupljeno 5.0 komada ASTS po $82.92"
+        "Kupljeno 5.0 komada ASTS po $82.92",
+        "Kupljeno 20.0 komada NIO po $5.03"
     ]
 }
