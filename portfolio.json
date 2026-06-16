@@ -1,13 +1,5 @@
 {
-    "kupljene_dionice": {
-        "ASTS": {
-            "cijena": 82.92,
-            "kolicina": 5.0
-        },
-        "NIO": {
-            "cijena": 5.03,
-            "kolicina": 20.0
-        }
-    },
+    "cash": 10000.0,
+    "kupljene_dionice": {},
     "povijest_trejdova": []
 }
