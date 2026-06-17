@@ -1,5 +1,5 @@
 {
-    "cash": 14999.996555,
+    "cash": 13499.015255,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
@@ -28,9 +28,14 @@
         "LAC": {
             "cijena": 4.535,
             "kolicina": 330.761
+        },
+        "GC=F": {
+            "cijena": 4276.3,
+            "kolicina": 0.351
         }
     },
     "povijest_trejdova": [
+        "[2026-06-17 21:29:53] 🟢 AUTO-BUY: Kupljen GC=F (0.351 kom) po $4276.3 ($Iznos: 1500.0)",
         "[2026-06-17 16:21:25] 🟢 AUTO-BUY: Kupljen LAC (330.761 kom) po $4.535 ($Iznos: 1500.0)",
         "[2026-06-17 16:21:25] 🔴 AUTO-SELL: Prodan TRVN (1500000.0 kom) po $0.011. P&L: $15000.0",
         "[2026-06-17 16:21:25] 🟢 AUTO-BUY: Kupljen TMC (184.83 kom) po $5.41 ($Iznos: 999.93)",
