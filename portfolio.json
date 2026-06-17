@@ -1,13 +1,9 @@
 {
-    "cash": 999.9279899999995,
+    "cash": 14999.996555,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
             "kolicina": 19.995
-        },
-        "TRVN": {
-            "cijena": 0.001,
-            "kolicina": 1500000.0
         },
         "SOUN": {
             "cijena": 6.99,
@@ -24,9 +20,20 @@
         "BABA": {
             "cijena": 110.12,
             "kolicina": 13.622
+        },
+        "TMC": {
+            "cijena": 5.41,
+            "kolicina": 184.83
+        },
+        "LAC": {
+            "cijena": 4.535,
+            "kolicina": 330.761
         }
     },
     "povijest_trejdova": [
+        "[2026-06-17 16:21:25] 🟢 AUTO-BUY: Kupljen LAC (330.761 kom) po $4.535 ($Iznos: 1500.0)",
+        "[2026-06-17 16:21:25] 🔴 AUTO-SELL: Prodan TRVN (1500000.0 kom) po $0.011. P&L: $15000.0",
+        "[2026-06-17 16:21:25] 🟢 AUTO-BUY: Kupljen TMC (184.83 kom) po $5.41 ($Iznos: 999.93)",
         "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen BABA (13.622 kom) po $110.12 ($Iznos: 1500.0)",
         "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen NIO (299.64 kom) po $5.006 ($Iznos: 1500.0)",
         "[2026-06-16 18:28:21] 🟢 AUTO-BUY: Kupljen ASTS (18.005 kom) po $83.31 ($Iznos: 1500.0)",
