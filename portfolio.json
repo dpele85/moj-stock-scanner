@@ -1,5 +1,5 @@
 {
-    "cash": 13499.015255,
+    "cash": 10498.999397000001,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
@@ -32,9 +32,19 @@
         "GC=F": {
             "cijena": 4276.3,
             "kolicina": 0.351
+        },
+        "GFAI": {
+            "cijena": 0.409,
+            "kolicina": 3667.482
+        },
+        "PLTR": {
+            "cijena": 128.47,
+            "kolicina": 11.676
         }
     },
     "povijest_trejdova": [
+        "[2026-06-18 20:43:29] 🟢 AUTO-BUY: Kupljen PLTR (11.676 kom) po $128.47 ($Iznos: 1500.0)",
+        "[2026-06-18 20:43:29] 🟢 AUTO-BUY: Kupljen GFAI (3667.482 kom) po $0.409 ($Iznos: 1500.0)",
         "[2026-06-17 21:29:53] 🟢 AUTO-BUY: Kupljen GC=F (0.351 kom) po $4276.3 ($Iznos: 1500.0)",
         "[2026-06-17 16:21:25] 🟢 AUTO-BUY: Kupljen LAC (330.761 kom) po $4.535 ($Iznos: 1500.0)",
         "[2026-06-17 16:21:25] 🔴 AUTO-SELL: Prodan TRVN (1500000.0 kom) po $0.011. P&L: $15000.0",
