@@ -1,5 +1,5 @@
 {
-    "cash": 8999.000127000001,
+    "cash": 7499.000127000001,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
@@ -44,9 +44,14 @@
         "CHPT": {
             "cijena": 6.79,
             "kolicina": 220.913
+        },
+        "TRVN": {
+            "cijena": 0.002,
+            "kolicina": 750000.0
         }
     },
     "povijest_trejdova": [
+        "[2026-06-26 10:40:10] 🟢 AUTO-BUY: Kupljen TRVN (750000.0 kom) po $0.002 ($Iznos: 1500.0)",
         "[2026-06-23 22:22:18] 🟢 AUTO-BUY: Kupljen CHPT (220.913 kom) po $6.79 ($Iznos: 1500.0)",
         "[2026-06-18 20:43:29] 🟢 AUTO-BUY: Kupljen PLTR (11.676 kom) po $128.47 ($Iznos: 1500.0)",
         "[2026-06-18 20:43:29] 🟢 AUTO-BUY: Kupljen GFAI (3667.482 kom) po $0.409 ($Iznos: 1500.0)",
