@@ -1,5 +1,5 @@
 {
-    "cash": 7499.000127000001,
+    "cash": 5999.005627000001,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
@@ -48,9 +48,14 @@
         "TRVN": {
             "cijena": 0.002,
             "kolicina": 750000.0
+        },
+        "MARA": {
+            "cijena": 12.29,
+            "kolicina": 122.05
         }
     },
     "povijest_trejdova": [
+        "[2026-07-02 17:13:29] 🟢 AUTO-BUY: Kupljen MARA (122.05 kom) po $12.29 ($Iznos: 1500.0)",
         "[2026-06-26 10:40:10] 🟢 AUTO-BUY: Kupljen TRVN (750000.0 kom) po $0.002 ($Iznos: 1500.0)",
         "[2026-06-23 22:22:18] 🟢 AUTO-BUY: Kupljen CHPT (220.913 kom) po $6.79 ($Iznos: 1500.0)",
         "[2026-06-18 20:43:29] 🟢 AUTO-BUY: Kupljen PLTR (11.676 kom) po $128.47 ($Iznos: 1500.0)",
