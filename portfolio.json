@@ -1,5 +1,5 @@
 {
-    "cash": 4499.0133970000015,
+    "cash": 2999.0132970000013,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
@@ -56,9 +56,14 @@
         "TSM": {
             "cijena": 427.47,
             "kolicina": 3.509
+        },
+        "OTLK": {
+            "cijena": 1.55,
+            "kolicina": 967.742
         }
     },
     "povijest_trejdova": [
+        "[2026-07-13 16:33:15] 🟢 AUTO-BUY: Kupljen OTLK (967.742 kom) po $1.55 ($Iznos: 1500.0)",
         "[2026-07-13 13:59:30] 🟢 AUTO-BUY: Kupljen TSM (3.509 kom) po $427.47 ($Iznos: 1500.0)",
         "[2026-07-02 17:13:29] 🟢 AUTO-BUY: Kupljen MARA (122.05 kom) po $12.29 ($Iznos: 1500.0)",
         "[2026-06-26 10:40:10] 🟢 AUTO-BUY: Kupljen TRVN (750000.0 kom) po $0.002 ($Iznos: 1500.0)",
