@@ -1,5 +1,5 @@
 {
-    "cash": 2999.0132970000013,
+    "cash": 6087.451517000001,
     "kupljene_dionice": {
         "CL=F": {
             "cijena": 75.02,
@@ -17,10 +17,6 @@
             "cijena": 5.006,
             "kolicina": 299.64
         },
-        "BABA": {
-            "cijena": 110.12,
-            "kolicina": 13.622
-        },
         "TMC": {
             "cijena": 5.41,
             "kolicina": 184.83
@@ -36,10 +32,6 @@
         "GFAI": {
             "cijena": 0.409,
             "kolicina": 3667.482
-        },
-        "PLTR": {
-            "cijena": 128.47,
-            "kolicina": 11.676
         },
         "CHPT": {
             "cijena": 6.79,
@@ -63,6 +55,8 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-07-14 15:15:05] 🔴 AUTO-SELL: Prodan BABA (13.622 kom) po $112.87. P&L: $37.46",
+        "[2026-07-14 15:15:05] 🔴 AUTO-SELL: Prodan PLTR (11.676 kom) po $132.83. P&L: $50.91",
         "[2026-07-13 16:33:15] 🟢 AUTO-BUY: Kupljen OTLK (967.742 kom) po $1.55 ($Iznos: 1500.0)",
         "[2026-07-13 13:59:30] 🟢 AUTO-BUY: Kupljen TSM (3.509 kom) po $427.47 ($Iznos: 1500.0)",
         "[2026-07-02 17:13:29] 🟢 AUTO-BUY: Kupljen MARA (122.05 kom) po $12.29 ($Iznos: 1500.0)",
