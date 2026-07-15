@@ -1,10 +1,6 @@
 {
-    "cash": 6087.451517000001,
+    "cash": 7683.852317000002,
     "kupljene_dionice": {
-        "CL=F": {
-            "cijena": 75.02,
-            "kolicina": 19.995
-        },
         "SOUN": {
             "cijena": 6.99,
             "kolicina": 214.592
@@ -55,6 +51,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-07-15 04:38:30] 🔴 AUTO-SELL: Prodan CL=F (19.995 kom) po $79.84. P&L: $96.38",
         "[2026-07-14 15:15:05] 🔴 AUTO-SELL: Prodan BABA (13.622 kom) po $112.87. P&L: $37.46",
         "[2026-07-14 15:15:05] 🔴 AUTO-SELL: Prodan PLTR (11.676 kom) po $132.83. P&L: $50.91",
         "[2026-07-13 16:33:15] 🟢 AUTO-BUY: Kupljen OTLK (967.742 kom) po $1.55 ($Iznos: 1500.0)",
