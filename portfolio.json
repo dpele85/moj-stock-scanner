@@ -1,5 +1,5 @@
 {
-    "cash": 7683.852317000002,
+    "cash": 15933.852317,
     "kupljene_dionice": {
         "SOUN": {
             "cijena": 6.99,
@@ -33,10 +33,6 @@
             "cijena": 6.79,
             "kolicina": 220.913
         },
-        "TRVN": {
-            "cijena": 0.002,
-            "kolicina": 750000.0
-        },
         "MARA": {
             "cijena": 12.29,
             "kolicina": 122.05
@@ -51,6 +47,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-07-16 04:48:47] 🔴 AUTO-SELL: Prodan TRVN (750000.0 kom) po $0.011. P&L: $6750.0",
         "[2026-07-15 04:38:30] 🔴 AUTO-SELL: Prodan CL=F (19.995 kom) po $79.84. P&L: $96.38",
         "[2026-07-14 15:15:05] 🔴 AUTO-SELL: Prodan BABA (13.622 kom) po $112.87. P&L: $37.46",
         "[2026-07-14 15:15:05] 🔴 AUTO-SELL: Prodan PLTR (11.676 kom) po $132.83. P&L: $50.91",
