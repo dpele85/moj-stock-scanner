@@ -1,5 +1,5 @@
 {
-    "cash": 9933.913074999999,
+    "cash": 11896.927075,
     "kupljene_dionice": {
         "SOUN": {
             "cijena": 6.99,
@@ -49,10 +49,6 @@
             "cijena": 17.01,
             "kolicina": 88.183
         },
-        "PLTR": {
-            "cijena": 121.496,
-            "kolicina": 12.346
-        },
         "HOOD": {
             "cijena": 101.28,
             "kolicina": 14.81
@@ -63,6 +59,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-04 16:04:35] 🔴 AUTO-SELL: Prodan PLTR (12.346 kom) po $159.0. P&L: $463.02",
         "[2026-07-30 04:45:32] 🟢 AUTO-BUY: Kupljen TRVN (136363.636 kom) po $0.011 ($Iznos: 1500.0)",
         "[2026-07-23 14:59:38] 🟢 AUTO-BUY: Kupljen HOOD (14.81 kom) po $101.28 ($Iznos: 1500.0)",
         "[2026-07-23 14:59:38] 🟢 AUTO-BUY: Kupljen PLTR (12.346 kom) po $121.496 ($Iznos: 1500.0)",
