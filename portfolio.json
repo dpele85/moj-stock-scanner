@@ -1,5 +1,5 @@
 {
-    "cash": 11896.927075,
+    "cash": 13380.744475,
     "kupljene_dionice": {
         "SOUN": {
             "cijena": 6.99,
@@ -20,10 +20,6 @@
         "LAC": {
             "cijena": 4.535,
             "kolicina": 330.761
-        },
-        "GC=F": {
-            "cijena": 4276.3,
-            "kolicina": 0.351
         },
         "GFAI": {
             "cijena": 0.409,
@@ -59,6 +55,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-05 07:31:06] 🔴 AUTO-SELL: Prodan GC=F (0.351 kom) po $4227.4. P&L: $-17.16",
         "[2026-08-04 16:04:35] 🔴 AUTO-SELL: Prodan PLTR (12.346 kom) po $159.0. P&L: $463.02",
         "[2026-07-30 04:45:32] 🟢 AUTO-BUY: Kupljen TRVN (136363.636 kom) po $0.011 ($Iznos: 1500.0)",
         "[2026-07-23 14:59:38] 🟢 AUTO-BUY: Kupljen HOOD (14.81 kom) po $101.28 ($Iznos: 1500.0)",
