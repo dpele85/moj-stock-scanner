@@ -1,5 +1,5 @@
 {
-    "cash": 17085.933115,
+    "cash": 15585.901735,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
@@ -40,9 +40,14 @@
         "TRVN": {
             "cijena": 0.011,
             "kolicina": 136363.636
+        },
+        "CL=F": {
+            "cijena": 83.81,
+            "kolicina": 17.898
         }
     },
     "povijest_trejdova": [
+        "[2026-08-12 05:22:33] 🟢 AUTO-BUY: Kupljen CL=F (17.898 kom) po $83.81 ($Iznos: 1500.0)",
         "[2026-08-07 15:42:29] 🔴 AUTO-SELL: Prodan SOUN (214.592 kom) po $7.72. P&L: $156.65",
         "[2026-08-07 14:04:04] 🔴 AUTO-SELL: Prodan TMC (184.83 kom) po $4.43. P&L: $-181.13",
         "[2026-08-05 15:06:28] 🔴 AUTO-SELL: Prodan ASTS (18.005 kom) po $68.3. P&L: $-270.26",
