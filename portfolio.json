@@ -1,21 +1,13 @@
 {
-    "cash": 15585.901735,
+    "cash": 18066.40048,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
             "kolicina": 299.64
         },
-        "LAC": {
-            "cijena": 4.535,
-            "kolicina": 330.761
-        },
         "GFAI": {
             "cijena": 0.409,
             "kolicina": 3667.482
-        },
-        "CHPT": {
-            "cijena": 6.79,
-            "kolicina": 220.913
         },
         "MARA": {
             "cijena": 12.29,
@@ -47,6 +39,8 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan CHPT (220.913 kom) po $6.28. P&L: $-112.67",
+        "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan LAC (330.761 kom) po $3.305. P&L: $-406.84",
         "[2026-08-12 05:22:33] 🟢 AUTO-BUY: Kupljen CL=F (17.898 kom) po $83.81 ($Iznos: 1500.0)",
         "[2026-08-07 15:42:29] 🔴 AUTO-SELL: Prodan SOUN (214.592 kom) po $7.72. P&L: $156.65",
         "[2026-08-07 14:04:04] 🔴 AUTO-SELL: Prodan TMC (184.83 kom) po $4.43. P&L: $-181.13",
