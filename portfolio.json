@@ -1,5 +1,5 @@
 {
-    "cash": 18066.40048,
+    "cash": 19596.00867,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
@@ -12,10 +12,6 @@
         "MARA": {
             "cijena": 12.29,
             "kolicina": 122.05
-        },
-        "TSM": {
-            "cijena": 427.47,
-            "kolicina": 3.509
         },
         "OTLK": {
             "cijena": 1.55,
@@ -39,6 +35,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-13 14:13:37] 🔴 AUTO-SELL: Prodan TSM (3.509 kom) po $435.91. P&L: $29.62",
         "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan CHPT (220.913 kom) po $6.28. P&L: $-112.67",
         "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan LAC (330.761 kom) po $3.305. P&L: $-406.84",
         "[2026-08-12 05:22:33] 🟢 AUTO-BUY: Kupljen CL=F (17.898 kom) po $83.81 ($Iznos: 1500.0)",
