@@ -1,5 +1,5 @@
 {
-    "cash": 19596.00867,
+    "cash": 21182.42084,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
@@ -17,10 +17,6 @@
             "cijena": 1.55,
             "kolicina": 967.742
         },
-        "SOFI": {
-            "cijena": 17.01,
-            "kolicina": 88.183
-        },
         "HOOD": {
             "cijena": 101.28,
             "kolicina": 14.81
@@ -35,6 +31,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-18 16:17:26] 🔴 AUTO-SELL: Prodan SOFI (88.183 kom) po $17.99. P&L: $86.42",
         "[2026-08-13 14:13:37] 🔴 AUTO-SELL: Prodan TSM (3.509 kom) po $435.91. P&L: $29.62",
         "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan CHPT (220.913 kom) po $6.28. P&L: $-112.67",
         "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan LAC (330.761 kom) po $3.305. P&L: $-406.84",
