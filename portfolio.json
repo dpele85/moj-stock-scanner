@@ -1,13 +1,9 @@
 {
-    "cash": 21182.42084,
+    "cash": 22484.376949999998,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
             "kolicina": 299.64
-        },
-        "GFAI": {
-            "cijena": 0.409,
-            "kolicina": 3667.482
         },
         "MARA": {
             "cijena": 12.29,
@@ -31,6 +27,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-19 13:35:25] 🔴 AUTO-SELL: Prodan GFAI (3667.482 kom) po $0.355. P&L: $-198.04",
         "[2026-08-18 16:17:26] 🔴 AUTO-SELL: Prodan SOFI (88.183 kom) po $17.99. P&L: $86.42",
         "[2026-08-13 14:13:37] 🔴 AUTO-SELL: Prodan TSM (3.509 kom) po $435.91. P&L: $29.62",
         "[2026-08-12 14:11:27] 🔴 AUTO-SELL: Prodan CHPT (220.913 kom) po $6.28. P&L: $-112.67",
