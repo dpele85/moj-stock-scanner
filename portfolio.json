@@ -1,5 +1,5 @@
 {
-    "cash": 25509.421299999998,
+    "cash": 24009.443199999998,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
@@ -16,9 +16,14 @@
         "TRVN": {
             "cijena": 0.011,
             "kolicina": 136363.636
+        },
+        "BABA": {
+            "cijena": 119.33,
+            "kolicina": 12.57
         }
     },
     "povijest_trejdova": [
+        "[2026-08-21 20:12:31] 🟢 AUTO-BUY: Kupljen BABA (12.57 kom) po $119.33 ($Iznos: 1500.0)",
         "[2026-08-21 10:18:11] 🔴 AUTO-SELL: Prodan CL=F (17.898 kom) po $87.2. P&L: $60.67",
         "[2026-08-19 16:17:25] 🔴 AUTO-SELL: Prodan HOOD (14.81 kom) po $98.875. P&L: $-35.62",
         "[2026-08-19 13:35:25] 🔴 AUTO-SELL: Prodan GFAI (3667.482 kom) po $0.355. P&L: $-198.04",
