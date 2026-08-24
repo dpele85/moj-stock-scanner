@@ -1,5 +1,5 @@
 {
-    "cash": 24009.443199999998,
+    "cash": 22509.4544,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
@@ -20,9 +20,14 @@
         "BABA": {
             "cijena": 119.33,
             "kolicina": 12.57
+        },
+        "ASTS": {
+            "cijena": 63.2,
+            "kolicina": 23.734
         }
     },
     "povijest_trejdova": [
+        "[2026-08-24 18:22:05] 🟢 AUTO-BUY: Kupljen ASTS (23.734 kom) po $63.2 ($Iznos: 1500.0)",
         "[2026-08-21 20:12:31] 🟢 AUTO-BUY: Kupljen BABA (12.57 kom) po $119.33 ($Iznos: 1500.0)",
         "[2026-08-21 10:18:11] 🔴 AUTO-SELL: Prodan CL=F (17.898 kom) po $87.2. P&L: $60.67",
         "[2026-08-19 16:17:25] 🔴 AUTO-SELL: Prodan HOOD (14.81 kom) po $98.875. P&L: $-35.62",
