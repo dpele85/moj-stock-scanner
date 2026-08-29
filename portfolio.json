@@ -1,13 +1,9 @@
 {
-    "cash": 21009.45608,
+    "cash": NaN,
     "kupljene_dionice": {
         "NIO": {
             "cijena": 5.006,
             "kolicina": 299.64
-        },
-        "MARA": {
-            "cijena": 12.29,
-            "kolicina": 122.05
         },
         "OTLK": {
             "cijena": 1.55,
@@ -31,6 +27,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-08-29 09:29:56] 🔴 AUTO-SELL: Prodan MARA (122.05 kom) po $nan. P&L: $nan",
         "[2026-08-27 23:18:55] 🟢 AUTO-BUY: Kupljen SOUN (207.756 kom) po $7.22 ($Iznos: 1500.0)",
         "[2026-08-24 18:22:05] 🟢 AUTO-BUY: Kupljen ASTS (23.734 kom) po $63.2 ($Iznos: 1500.0)",
         "[2026-08-21 20:12:31] 🟢 AUTO-BUY: Kupljen BABA (12.57 kom) po $119.33 ($Iznos: 1500.0)",
