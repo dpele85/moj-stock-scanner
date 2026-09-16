@@ -5,10 +5,6 @@
             "cijena": 5.006,
             "kolicina": 299.64
         },
-        "OTLK": {
-            "cijena": 1.55,
-            "kolicina": 967.742
-        },
         "TRVN": {
             "cijena": 0.011,
             "kolicina": 136363.636
@@ -27,6 +23,7 @@
         }
     },
     "povijest_trejdova": [
+        "[2026-09-16 17:48:10] 🔴 AUTO-SELL: Prodan OTLK (967.742 kom) po $0.691. P&L: $-831.29",
         "[2026-08-29 09:29:56] 🔴 AUTO-SELL: Prodan MARA (122.05 kom) po $nan. P&L: $nan",
         "[2026-08-27 23:18:55] 🟢 AUTO-BUY: Kupljen SOUN (207.756 kom) po $7.22 ($Iznos: 1500.0)",
         "[2026-08-24 18:22:05] 🟢 AUTO-BUY: Kupljen ASTS (23.734 kom) po $63.2 ($Iznos: 1500.0)",
